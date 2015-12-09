@@ -78,5 +78,6 @@ function __autoload ($name) {
 	<br>
 	<a href="show_basket.php"> Перейти к корзине </a>
 	<br>
+	qwerty
 </body>
 </html>
