@@ -8,7 +8,7 @@ class DB extends mysqli {
 	// Метод для создания таблиц в БД
 	function create_table ($sql){
 		if ($this->query($sql)) {
-			echo "Table is created!";
+			//echo "Table is created!";
 		}else {
 			echo $this->error."<br>";	
 		}
