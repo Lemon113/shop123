@@ -10,7 +10,7 @@ class DB extends mysqli {
 		if ($this->query($sql)) {
 			//echo "Table is created!";
 		}else {
-			echo $this->error."<br>";	
+			//echo $this->error."<br>";	
 		}
 	}
 	// Метод для добавления товара в БД
