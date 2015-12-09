@@ -1,10 +1,32 @@
 <?php
+//Проверка на только что добавленный товар:
+if (isset($GLOBALS["add2catalog"]) && $GLOBALS["add2catalog"]) {
+	$GLOBALS["add2catalog"] = false;
+	header("location: add2catalog.php");
+	exit;
+}
+
+//более стабильный автолоад:
 function __autoload ($name) {
 	$str = "class." . $name . ".php";
-	if (! include $str) echo ("НЕ получилось");
+	try {
+		include $str;
+	} catch (Exception $e) {
+		echo 'Произошла ошибка: ',  $e->getMessage(), "<br>";
+	}
 }
+?>
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>
+			add2Catalog
+		</title>
+		<meta charset="utf-8">
+	</head>
+<body>
+<?php
 $data = new Data();
-
 /*	Проверка массива POST на данные о новом товаре. 
 	Запись товара в БД	*/
 if (isset ($_POST['name'])){
@@ -16,23 +38,12 @@ if (isset ($_POST['name'])){
 	if ($name && $description && $amount && $price){
 		$db = new DB();
 		$db->add2catalog($name, $description, $amount, $price);
+		$GLOBALS["add2catalog"] = true;
 	}else{
 		echo "<br> Введены некорректные данные!<br>";
 	}
 }
-
 ?>
-
-
-<!DOCTYPE html>
-<html>
-	<head>
-		<title>
-			add2Catalog
-		</title>
-		<meta charset="utf-8">
-	</head>
-<body>
 	<a href="show_catalog.php"> Перейти к каталогу </a> <br>
 	<form action = "add2catalog.php" method= "POST">
 		<label> Input name: </label><br>

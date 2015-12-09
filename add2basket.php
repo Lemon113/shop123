@@ -2,9 +2,14 @@
 session_start();
 $session_id = session_id();
 
+//более стабильный автолоад:
 function __autoload ($name) {
 	$str = "class." . $name . ".php";
-	if (! include $str) echo ("НЕ получилось");
+	try {
+		include $str;
+	} catch (Exception $e) {
+		echo 'Произошла ошибка: ',  $e->getMessage(), "<br>";
+	}
 }
 
 //создание новой корзины:
@@ -13,16 +18,16 @@ $id = $db->new_basket($session_id);
 
 $_SESSION["id_basket"] = $id;
 
-//echo $id."<br>";
+//распатрониваем пришедший ассинхронным запросом ПОСТ:
 if (isset($_POST["input"])) {
-	$stuff = explode(":", explode(";",$_POST["input"])[0])[1];
-	$am = explode(":", explode(";",$_POST["input"])[1])[1];
+	
+	$arr = explode(";", $_POST["input"]);
+	$arr = array( explode(":", $arr[0]), explode(":", $arr[1]) );
+	
+	$stuff 	= $arr[0][1];
+	$am 	= $arr[1][1];
 	
 	$db->add2basket($id, $stuff, $am);
 }
-	//echo $stuff."<br>".$am;
-	
-
-
 ?>
 
