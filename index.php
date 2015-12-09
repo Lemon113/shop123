@@ -1,7 +1,7 @@
 <?php
 function __autoload ($name) {
 	$str = "class." . $name . ".php";
-	if (! include $str) echo ("НЕ получилось");
+	if (! include $str) echo ("НЕ ЧЕГО НЕ получилось");
 }
 
 
