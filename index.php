@@ -6,7 +6,7 @@ function __autoload ($name) {
 
 
 $db = new DB();
-
+//test
 //Создание каталога
 $sql = "CREATE TABLE catalog(
 			id   INT(2) PRIMARY KEY AUTO_INCREMENT NOT NULL,
