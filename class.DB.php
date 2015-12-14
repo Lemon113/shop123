@@ -1,11 +1,10 @@
 <?php
 
 class DB extends mysqli {
-
-	function __construct (){   //Настройки БД указывать тут:
+	
+	function __construct (){
 		parent::__construct('localhost', 'root', '', 'shop123');
 	}
-	
 	// Метод для создания таблиц в БД
 	function create_table ($sql){
 		if ($this->query($sql)) {
@@ -14,18 +13,22 @@ class DB extends mysqli {
 			//echo $this->error."<br>";	
 		}
 	}
-	
 	// Метод для добавления товара в БД
 	function add2catalog ($name, $description, $amount, $price){
+		
 		$sql = "INSERT INTO 
 					catalog (name, description, amount, price)
 				VALUES
 					('$name', '$description', $amount, $price)";
-		if (!($this->query($sql))) {
-			//echo $this->error."<br>";	
+		
+		if ($this->query($sql)) {
+			echo "<br> New stuff is added! <br>";
+			header("location: add2catalog.php");
+			exit;
+		}else {
+			echo $this->error."<br>";	
 		}
 	}
-	
 	//Метод получения данных о товарах для каталога
 	function show_catalog(){
 		$sql = "SELECT * FROM catalog";
@@ -47,12 +50,14 @@ class DB extends mysqli {
 		}
 	}
 	
+	
 	//создание новой корзины:
 	function new_basket($session_id){
 		$sql = "SELECT * FROM basket
 					 WHERE  id_session  = '".  $session_id."'";
 		if ($res = $this->query($sql)) {
 			$field_cnt = $res->num_rows;
+			//echo var_dump($field_cnt);
 			if ($field_cnt == 0) {
 				$sql = "INSERT  INTO basket ( id_session )
 					          VALUES ('" . $session_id . "')" ;
@@ -68,64 +73,48 @@ class DB extends mysqli {
 		}
 	}
 	
+	
 	//добавление в корзину:
-	function add2basket($id, $stuff_id, $amount){
-		$sql = "INSERT INTO   
-					basket_goods (id_basket, id_catalog, amount)
-				VALUES 
-					(". $id .", ". $stuff_id.", ".$amount.")";
+	 function add2basket($id, $stuff_id, $amount){
+		 $sql = "INSERT INTO   basket_goods (id_basket, id_catalog, amount)
+							VALUES (". $id .", ". $stuff_id.", ".$amount.")";
 		if ($this->query($sql)) {
-			//echo "";
-		}else {
-			//echo $this->error."<br>";	
-		}
-	}
-	 
-	//Метод удаления данных корзины
-	function delete_basket($id_basket, $id_catalog){
-		$sql = "DELETE FROM basket_goods 
-				WHERE 
-					basket_goods.id_basket  = ".$id_basket."
-						AND
-					basket_goods.id_catalog = ".$id_catalog;
-		if ($this->query($sql)) {
-			echo "succes";
+			//echo "Table is created!";
 		}else {
 			echo $this->error."<br>";	
-		}			
-	}
-	
-	//Метод получения данных корзины
+		}
+	 }
+	 
+	 
+	 //Метод получения данных корзины
 	function show_basket($id){
-		$sql = "SELECT  catalog.price 		AS price,
-						catalog.name 		AS name,
-						basket_goods.amount AS amount,
-						catalog.id 			AS id
-				FROM 	
-					basket_goods, 
-					basket,
-					catalog
-				WHERE 
-					basket_goods.id_basket =". $id."
+		
+		$sql = "SELECT  catalog.price AS price,
+									catalog.name AS name,
+									basket_goods.amount AS amount,
+									catalog.id AS id
+					 FROM 	basket_goods, 
+									basket,
+									catalog
+					 WHERE 
+						basket_goods.id_basket =". $id."
 						AND
-					basket.id = basket_goods.id_basket
+						basket.id = basket_goods.id_basket
 						AND
-					catalog.id = basket_goods.id_catalog";
-					
-		$res = $this->query($sql);
-		$field_cnt = $res->num_rows;
-		if ($field_cnt == 0) {
-			echo "Корзина пустая.<br>
-</body>
-</html>";
-			exit;
-		} 
+						catalog.id = basket_goods.id_catalog";
+			$res = $this->query($sql);
+			//echo var_dump ($res );
 		if ($res) {
+			
 			$arr = array();
 			$i = 0;
+			//echo var_dump($res->fetch_array(MYSQLI_ASSOC));
 			while ($v = $res->fetch_array(MYSQLI_ASSOC)){
+				
+				//echo var_dump($v);
 				$arr[$i]["id"] 			= $v["id"];
 				$arr[$i]["name"] 		= $v["name"];
+				//$arr[$i]["description"] = $v["description"];
 				$arr[$i]["amount"] 		= $v["amount"];
 				$arr[$i]["price"] 		= $v["price"]; 
 				$i++;
@@ -135,6 +124,25 @@ class DB extends mysqli {
 			echo $this->error."<br>";	
 		}
 	}
-	
+	function create_order($info, $id_b){
+		$sql = "INSERT INTO orders (info)
+					VALUES ('".$info."')";
+		$this->query($sql);
+		$id_o =  $this->insert_id;		
+		
+		$arr = $this->show_basket($id_b);
+		$price = 0;
+		foreach ($arr as $val){
+			$price += $val["amount"] * $val["price"];
+			$sql = "INSERT INTO order_goods (id_orders,  id_catalog, amount)
+					VALUES (".$id_o.", ".$val["id"].", ".$val["amount"].")";	
+			$this->query($sql);
+		}
+		$sql = "UPDATE orders SET price = ".$price." WHERE id = ". $id_o;
+		$this->query($sql);
+	}
 }
+
+
+
 ?>

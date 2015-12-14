@@ -1,14 +1,11 @@
 <?php
-//более стабильный автолоад:
 function __autoload ($name) {
 	$str = "class." . $name . ".php";
-	try {
-		include $str;
-	} catch (Exception $e) {
-		echo 'Произошла ошибка: ',  $e->getMessage(), "<br>";
-	}
+	if (! include $str) echo ("НЕ получилось");
 }
 ?>
+
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -37,6 +34,7 @@ function __autoload ($name) {
 			}
 		</script>
 	</head>
+
 <body>
 	<h2>Это каталог товаров!</h2>
 	
@@ -46,14 +44,18 @@ function __autoload ($name) {
 	<br>
 	<table border="1">
 	<tr>
-		<th>Наименование:</th>
-		<th>Описание:</th>
+		<th> Наименование:</th>
+		<th> Описание:</th>
 		<th>Введите кол-во:</th>
 		<th>Цена:</th>
 		<th> </th>
+
 	</tr>
 	
 <?php
+
+
+
 	$db  = new DB();
 	$arr = $db->show_catalog(); 
 	$i=0;
@@ -67,14 +69,14 @@ function __autoload ($name) {
 		echo "</tr>";
 		$i++;
 	}
+
 ?>		
 		
 	</table>
-
+	
 	<div class='result'></div>
 	<br>
 	<a href="show_basket.php"> Перейти к корзине </a>
 	<br>
-	<a href="add2catalog.php"> Перейти к добавлению товаров в каталог </a> <br>
 </body>
 </html>
