@@ -5,7 +5,7 @@ if (isset($GLOBALS["add2catalog"]) && $GLOBALS["add2catalog"]) {
 	header("location: add2catalog.php");
 	exit;
 }
-
+//sdflsjdaf
 //более стабильный автолоад:
 function __autoload ($name) {
 	$str = "class." . $name . ".php";
