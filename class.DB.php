@@ -1,5 +1,5 @@
 <?php
-
+//qwertyuiop[]\
 class DB extends mysqli {
 	
 	function __construct (){
