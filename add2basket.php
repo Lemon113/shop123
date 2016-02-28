@@ -10,19 +10,13 @@ function __autoload ($name) {
 //создание новой корзины:
 $db = new DB();
 $id = $db->new_basket($session_id);
-
 $_SESSION["id_basket"] = $id;
-
-//echo $id."<br>";
 if (isset($_POST["input"])) {
+	// Парсинга входящего из show_basket.php POST'a
 	$stuff = explode(":", explode(";",$_POST["input"])[0])[1];
-	$am = explode(":", explode(";",$_POST["input"])[1])[1];
+	$amount = explode(":", explode(";",$_POST["input"])[1])[1];
 	
-	$db->add2basket($id, $stuff, $am);
+	$db->add2basket($id, $stuff, $amount);
 }
-	//echo $stuff."<br>".$am;
-	
-
-
 ?>
 
